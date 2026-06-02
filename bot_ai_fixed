@@ -1,0 +1,40 @@
+import asyncio
+import aiohttp
+from aiogram import Bot, Dispatcher, types
+from aiogram.filters import Command
+
+TOKEN = ""
+OPENROUTER_KEY = ""
+
+bot = Bot(token=TOKEN)
+dp = Dispatcher()
+
+async def ask_ai(prompt: str) -> str:
+    async with aiohttp.ClientSession() as sess:
+        headers = {"Authorization": f"Bearer {OPENROUTER_KEY}", "Content-Type": "application/json"}
+        payload = {
+            "model": "google/gemini-2.0-flash-exp:free",
+            "messages": [{"role": "user", "content": prompt}]
+        }
+        async with sess.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload) as resp:
+            if resp.status != 200:
+                return f"❌ Ошибка API ({resp.status})"
+            data = await resp.json()
+            return data["choices"][0]["message"]["content"]
+
+@dp.message(Command("start"))
+async def start(msg: types.Message):
+    await msg.answer("🤖 Привет! Я AI-бот. Задай вопрос.")
+
+@dp.message()
+async def reply(msg: types.Message):
+    await bot.send_chat_action(msg.chat.id, "typing")
+    answer = await ask_ai(msg.text)
+    await msg.answer(answer)
+
+async def main():
+    print("✅ Бот с ИИ запущен!")
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())
