@@ -5,8 +5,8 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from openai import AsyncOpenAI
 
-TELEGRAM_BOT_TOKEN = "8317002212:AAF4ob2iP1VRMb9QXLHlN0Gv7pagAaFuaWM"
-OPENROUTER_API_KEY = "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"
+TELEGRAM_BOT_TOKEN = ""
+OPENROUTER_API_KEY = ""
 
 logging.basicConfig(level=logging.INFO)
 
